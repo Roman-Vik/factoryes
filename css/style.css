@@ -1,0 +1,10 @@
+
+@import url('./config.css');
+
+body{
+    border: solid 2px red;
+}
+.header{
+    color: rebeccapurple;
+    font-size: 100px;
+}
