@@ -1,10 +1,6 @@
 
 @import url('./config.css');
+@import url('./main.css');
+@import url('./fonts.css');
+@import url('./form-content.css');
 
-body{
-    border: solid 2px red;
-}
-.header{
-    color: rebeccapurple;
-    font-size: 100px;
-}

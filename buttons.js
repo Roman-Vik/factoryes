@@ -3,6 +3,7 @@ import { clearForm } from "./show-form.js";
 const list = document.querySelector(".app__list-blocks");
 const btnSave = document.querySelector(".app__btn-save");
 const blocks = document.querySelectorAll(".app__block");
+import { createFactory, updateFactory, deleteFactoty } from "./crud.js";
 
 document.querySelector(".app__btn-add").addEventListener("click", (e) => {
     localStorage.removeItem("checkBtn");
@@ -32,54 +33,7 @@ blocks.forEach((elem, i) => {
     });
 });
 
-async function createFactory(factory) {
-    try {
-        const response = await fetch("http://127.0.0.1:4000/factory/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(factory),
-        });
-    } catch (error) {
-        console.error("Ошибка:", error);
-    }
-}
-async function updateFactory(id, factory) {
-    try {
-        console.log( "Check",id, factory)
-        const response = await fetch("http://127.0.0.1:4000/factory/" + id, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ ...factory, host: factory.host.join('.')}),
-        }); if (!response.ok) {
-            const errorText = await response.text(); // Получите текст ответа для более подробной информации
-    throw new Error("Ошибка сети: " + response.status + " " + errorText);
-        }
-        const data = await response.json();
-    } catch (error) {
-        console.error("Ошибка:", error);
-    }
-}
-async function postDeleteFactoty(factory) {
-    try {
-        const response = await fetch("http://127.0.0.1:4000/factory/", {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(factory), //! если не получиться убери скобки Передаем поля для удаления
-        });
-        if (!response.ok) {
-            throw new Error("Ошибка сети");
-        }
-        const data = await response.json();
-    } catch (error) {
-        console.error("Ошибка:", error);
-    }
-}
+
 
 function removeFactoryHtml(e) {
     if (e.target.classList.contains("app__btn-remove")) {
@@ -100,7 +54,7 @@ function removeFactoryHtml(e) {
         localStorage.setItem("factoryes", JSON.stringify(dataFilter));
         const get = localStorage.getItem("factoryes");
         elem.style = "display:none;";
-        postDeleteFactoty(data);
+        deleteFactoty(data);
     }
 }
 
@@ -110,12 +64,7 @@ function changeFactoryHtml(e) {
     switch (activeStatusBtn) {
         case "app__btn-add": {
             console.log("activeStatusBtn = add");
-            if (
-                index &&
-                name &&
-                (host.join(".").replace(/[^0-9]/g, "").length > 5 ||
-                    host.join(".").replace(/[^0-9]/g, "").length < 13)
-            ) {
+            if (index &&name &&(host.join(".").replace(/[^0-9]/g, "").length > 5 || host.join(".").replace(/[^0-9]/g, "").length < 13) ) {
                 const html = `
                     <ul class="app__item item">
                         <li class="item__title">${name}</li>
@@ -178,12 +127,11 @@ function changeFactoryHtml(e) {
                     host.textContent = changedFactory.host;
                     const idFactory = changedFactory["_id"]
                     updateFactory(idFactory, changedFactory);
+                    localStorage.removeItem("factoryes");
                     localStorage.setItem("factoryes",JSON.stringify(dataLocalStorage));
                     console.log("Изменить", changedFactory);
-                    document.querySelector(".app__first-page").style =
-                        "display:block;";
-                    document.querySelector(".app__second-page").style =
-                        "display:none;";
+                    document.querySelector(".app__first-page").style = "display:block;";
+                    document.querySelector(".app__second-page").style = "display:none;";
                 } else {
                     console.log(
                         "Не удалось найти подходящий элемент для изменения."

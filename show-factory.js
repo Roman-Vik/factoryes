@@ -1,8 +1,5 @@
-
 const listFactoryes = JSON.parse(localStorage.getItem('factoryes')) || []
 
-
-console.log("list",listFactoryes,)
 export function renderFactoryes(arr){
     if(arr){
         arr.map(el =>{
@@ -23,14 +20,11 @@ export function renderFactoryes(arr){
             divElement.innerHTML = html;
             const titleElement = document.querySelector('.item__title');
     
-            
          if (titleElement) {
             titleElement.textContent = name 
           }
           document.querySelector(".app__list-blocks").appendChild(divElement);
-    
             })
     }
-   
 }
 renderFactoryes(listFactoryes)
