@@ -38,7 +38,7 @@ blocks.forEach((elem, i) => {
 function removeFactoryHtml(e) {
     if (e.target.classList.contains("app__btn-remove")) {
         let listData =
-            e.target.parentElement.parentElement.firstElementChild.children;
+        e.target.parentElement.parentElement.firstElementChild.children;
         let elem = e.target.parentElement.parentElement;
         let data = {
             index: listData[1].innerText,
@@ -47,27 +47,34 @@ function removeFactoryHtml(e) {
         };
         console.log("remove element ", data);
         const dataLocalStorage = JSON.parse(localStorage.getItem("factoryes"));
-        let dataFilter = dataLocalStorage.filter(
-            (factoryes) => factoryes.name != data.name
-        );
+        console.log( "localstorage", dataLocalStorage);
+
+        let dataFilter = dataLocalStorage.filter( (factoryes) => factoryes.name != data.name);
+            elem.style = "display:none;";   
         localStorage.removeItem("factoryes");
         localStorage.setItem("factoryes", JSON.stringify(dataFilter));
-        const get = localStorage.getItem("factoryes");
-        elem.style = "display:none;";
-        deleteFactoty(data);
+         deleteFactoty(data);
+         location.reload();
+         
     }
 }
-
 function changeFactoryHtml(e) {
     const { index, name, host, nodeId } = data;
     const activeStatusBtn = localStorage.getItem("checkBtn");
     switch (activeStatusBtn) {
+        
         case "app__btn-add": {
-            console.log("activeStatusBtn = add");
-            if (index &&name &&(host.join(".").replace(/[^0-9]/g, "").length > 5 || host.join(".").replace(/[^0-9]/g, "").length < 13) ) {
+            const ipPattern = /^(\d{1,3}\.){3}\d{1,3}$/;
+
+            let duble =  JSON.parse(localStorage.getItem('factoryes')).find(e => e.name.toLowerCase() === name.toLowerCase())
+           if(duble){
+            alert("такое имя уже существует")
+        } else if ( index && name && ipPattern.test(host.join("."))
+                
+) {
                 const html = `
                     <ul class="app__item item">
-                        <li class="item__title">${name}</li>
+                        <li class="item__title">"${name}"</li>
                         <li class="item__id">${index}</li>
                         <li class="item__host">${host.join(".")}</li>
                     </ul>
@@ -90,28 +97,26 @@ function changeFactoryHtml(e) {
                 console.log("localstorage", JSON.parse(get));
                 createFactory({ ...data, host: data.host.join(".") });
                 alert("Завод добавлен");
-                // location.reload();
-                document.querySelector(".app__first-page").style =
-                    "display:block;";
-                document.querySelector(".app__second-page").style =
-                    "display:none;";
+                document.querySelector(".app__first-page").style = "display:block;";
+                document.querySelector(".app__second-page").style = "display:none;";
+                    location.reload();
             } else {
                 alert("форма заполнена некорректно");
             }
             break;
         }
         case "app__btn-change": {
-            console.log("updateData пришла", updateData)
-            if (index && name) {
+            const ipPattern = /^(\d{1,3}\.){3}\d{1,3}$/;
+            console.log("updateData пришла host", ipPattern.test(host.join(".")))
+            if (index && name && ipPattern.test(host.join("."))) {
                 const dataLocalStorage = JSON.parse(localStorage.getItem("factoryes"));
                 let changedFactory = null;
                 for (let i = 0; i < dataLocalStorage.length; i++) {
                     if (dataLocalStorage[i].name === updateData.name) {
-                        
                         // Если нашли подходящий элемент, обновляем его и выходим из цикла
                         dataLocalStorage[i].name  =  data.name;
                         dataLocalStorage[i].index = data.index;
-                        dataLocalStorage[i].host  =  data.host;
+                        dataLocalStorage[i].host  =  data.host
                         dataLocalStorage[i].nodeId = updateData.nodeId
                         changedFactory = dataLocalStorage[i];
                         break;
@@ -124,14 +129,15 @@ function changeFactoryHtml(e) {
                     let id = blocks[changedFactory.nodeId].querySelector( ".item__id");
                     id.textContent = changedFactory.index;
                     let host =blocks[changedFactory.nodeId].querySelector(".item__host");
-                    host.textContent = changedFactory.host;
+                    host.textContent = changedFactory.host.join('.');
                     const idFactory = changedFactory["_id"]
                     updateFactory(idFactory, changedFactory);
-                    localStorage.removeItem("factoryes");
                     localStorage.setItem("factoryes",JSON.stringify(dataLocalStorage));
-                    console.log("Изменить", changedFactory);
-                    document.querySelector(".app__first-page").style = "display:block;";
-                    document.querySelector(".app__second-page").style = "display:none;";
+                    document.querySelector(".app__first-page").style =
+                        "display:block;";
+                    document.querySelector(".app__second-page").style =
+                        "display:none;";
+                        location.reload();
                 } else {
                     console.log(
                         "Не удалось найти подходящий элемент для изменения."

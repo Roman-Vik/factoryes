@@ -44,7 +44,7 @@ export async function deleteFactoty(factory) {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(factory),
+            body: JSON.stringify(factory), //! если не получиться убери скобки Передаем поля для удаления
         });
         if (!response.ok) {
             throw new Error("Ошибка сети");
